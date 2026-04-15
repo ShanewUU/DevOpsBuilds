@@ -3,11 +3,10 @@ name: .NET Build and Test with Reports
 on:
   push:
    paths-ignore:
-      # ignore paths and markdown files
-      - ".github/workflows/**"
-      - "**/*.md"
-      
-      - "src/java/**"
+     # ignore paths and markdown files
+     - ".github/workflows/**"
+     - "**/*.md" 
+     - "src/java/**"
     branches: [ main ]
   pull_request:
     branches: [ main ]

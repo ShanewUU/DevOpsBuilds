@@ -50,7 +50,7 @@ jobs:
     #Run our build using Gradle
     - name: Build with Gradle
       # normally we would use run: ./gradlew build but the gradle build is in a sub directory
-      run: ./src/java/gradlew -p ./src/java/
+      run: ./src/java/gradlew build -p ./src/java/
     
     # NOTE: The Gradle Wrapper is the default and recommended way to run Gradle (https://docs.gradle.org/current/userguide/gradle_wrapper.html).
     # If your project does not have the Gradle Wrapper configured, you can use the following configuration to run Gradle with a specified version.
@@ -78,4 +78,4 @@ jobs:
       #Run our build using Gradle
       - name: Test with Gradle
         # run: ./gradlew test
-        run: ./src/java/gradlew test
+        run: ./src/java/gradlew test -p ./src/java/

@@ -40,7 +40,7 @@ jobs:
       run: dotnet test src/CSharp/SimpleBuildTest/SimpleBuildTest.slnx --no-build --configuration Release --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" --results-directory TestResults/
 
     - name: Install ReportGenerator
-      run: dotnet tool install -g reportgenerator
+      run: dotnet tool install -g dotnet-reportgenerator-globaltool
 
     - name: Generate coverage report
       run: reportgenerator -reports:TestResults/**/coverage.cobertura.xml -targetdir:coverage-report -reporttypes:HtmlInline_AzurePipelines

@@ -1,0 +1,68 @@
+name: .NET Build and Test with Reports
+
+on:
+  push:
+   paths-ignore:
+      # ignore paths and markdown files
+      - ".github/workflows/**"
+      - "**/*.md"
+      
+      - "src/java/**"
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+     # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: '10.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore src/CSharp/SimpleBuildTest/SimpleBuildTest.slnx
+
+    - name: Build
+      run: dotnet build src/CSharp/SimpleBuildTest/SimpleBuildTest.slnx --no-restore --configuration Release
+
+    - name: Run tests with coverage
+      run: dotnet test src/CSharp/SimpleBuildTest/SimpleBuildTest.slnx --no-build --configuration Release --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" --results-directory TestResults/
+
+    - name: Install ReportGenerator
+      run: dotnet tool install -g reportgenerator
+
+    - name: Generate coverage report
+      run: reportgenerator -reports:TestResults/**/coverage.cobertura.xml -targetdir:coverage-report -reporttypes:HtmlInline_AzurePipelines
+
+    - name: Publish test results
+      if: always()
+      uses: actions/upload-artifact@v7
+      with:
+        name: test-results
+        path: TestResults/
+        retention-days: 30
+
+    - name: Upload coverage reports as artifact
+      if: always()
+      uses: actions/upload-artifact@v7
+      with:
+        name: coverage-report
+        path: coverage-report/
+        retention-days: 30
+
+    - name: Deploy to GitHub Pages
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main' && always()
+      uses: actions/deploy-pages@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
